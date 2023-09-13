@@ -1,30 +1,24 @@
 {
-	// Place your global snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
-	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
-	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
-	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
-	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
-	// Placeholders with the same ids are connected.
-	// Example:
-	// "Print to console": {
-	// 	"scope": "javascript,typescript",
-	// 	"prefix": "log",
-	// 	"body": [
-	// 		"console.log('$1');",
-	// 		"$2"
-	// 	],
-	// 	"description": "Log output to console"
-	// }
+	"C++ Prelude": {
+		"scope": "cpp",
+		"prefix": "prelude",
+		"body": [
+			"#include <shards/core/shared.hpp>",
+			"#include <shards/core/params.hpp>",
+			"#include <shards/common_types.hpp>",
+		],
+		"description": "Common includes for new shard implementations"
+	},
 	"C++ Shard": {
 		"scope": "cpp",
 		"prefix": "shard",
 		"body": [
 			"struct ${0:SHARD_NAME} {",
-			"  static SHTypesInfo inputTypes() { return CoreInfo::AnyType; }",
-			"  static SHTypesInfo outputTypes() { return CoreInfo::AnyType; }",
+			"  static SHTypesInfo inputTypes() { return shards::CoreInfo::AnyType; }",
+			"  static SHTypesInfo outputTypes() { return shards::CoreInfo::AnyType; }",
 			"  static SHOptionalString help() { return SHCCSTR(\"\"); }",
 			"  ",
-			"  PARAM_PARAMVAR(_someParam, \"RenameThis\", \"AddDescriptionHere\", {CoreInfo::AnyType});",
+			"  PARAM_PARAMVAR(_someParam, \"RenameThis\", \"AddDescriptionHere\", {shards::CoreInfo::AnyType});",
 			"  PARAM_IMPL(PARAM_IMPL_FOR(_someParam));",
 			"  ",
 			"  void warmup(SHContext *context) {",
@@ -38,7 +32,7 @@
 			"  PARAM_REQUIRED_VARIABLES();",
 			"  SHTypeInfo compose(SHInstanceData &data) {",
 			"    PARAM_COMPOSE_REQUIRED_VARIABLES(data);",
-			"    return CoreInfo::NoneType;",
+			"    return shards::CoreInfo::NoneType;",
 			"  }",
 			"  ",
 			"  SHVar activate(SHContext *shContext, const SHVar &input) { return input; }",
@@ -47,20 +41,93 @@
 		"description": "New C++ shard scaffolding"
 	},
 	"Rust Enum": {
-		"scope": "rs",
+		"scope": "rust",
 		"prefix": "enum",
 		"body": [
-		"#[derive(shards::shards_enum)]",
-		"#[enum_info(",
-		"  b\"aaaa\",",
-		"  \"${0:NAME}\",",
-		"  \"${1:HELP_TEXT}\"",
-		")]",
-		"pub enum ${0:NAME} {",
-		"  #[enum_value(\"DESCRIPTION\")]", 
-		"  None = 0x0,",
-		"}",
+			"#[derive(shards::shards_enum)]",
+			"#[enum_info(",
+			"  b\"${2:aaaa}\",",
+			"  \"${1:NAME}\",",
+			"  \"AddDescriptionHere\"",
+			")]",
+			"pub enum ${1:NAME} {",
+			"  #[enum_value(\"AddDescriptionHere\")]",
+			"  None = 0x0,",
+			"}",
 		],
 		"description": "New rust enum scaffolding"
+	},
+	"Rust Prelude": {
+		"scope": "rust",
+		"prefix": "prelude",
+		"body": [
+			"use shards::types::{ExposedTypes, Types, Context, InstanceData, Type, Var, ParamVar};",
+			"use shards::types::{common_type, NONE_TYPES};",
+			"use shards::shard::Shard;",
+			"use shards::core::{register_shard, register_enum};",
+		],
+		"description": "Common imports for new shard implementations"
+	},
+	"Rust Param": {
+		"scope": "rust",
+		"prefix": "param",
+		"body": [
+			"#[shard_param(\"${1:NAME}\", \"AddDescriptionHere\", [common_type::int])]",
+			"${1/(.*)/${1:/downcase}/}: ${2:ParamVar},",
+		],
+		"description": "A shard parameter"
+	},
+	"Rust Shard": {
+		"scope": "rust",
+		"prefix": "shard",
+		"body": [
+			"#[derive(shards::shard)]",
+			"#[shard_info(\"${1:NAME}\", \"AddDescriptionHere\")]",
+			"struct ${1:NAME}Shard {",
+			"  #[shard_required]",
+			"  required: ExposedTypes,",
+			"}",
+			"",
+			"impl Default for ${1:Name}Shard {",
+			"  fn default() -> Self {",
+			"    Self {",
+			"      required: ExposedTypes::new(),",
+			"    }",
+			"  }",
+			"}",
+			"",
+			"#[shards::shard_impl]",
+			"impl Shard for ${1:Name}Shard {",
+			"  fn input_types(&mut self) -> &Types {",
+			"    &NONE_TYPES",
+			"  }",
+			"",
+			"  fn output_types(&mut self) -> &Types {",
+			"    &OUTPUT_TYPES",
+			"  }",
+			"",
+			"  fn warmup(&mut self, ctx: &Context) -> Result<(), &str> {",
+			"    self.warmup_helper(ctx)?;",
+			"    ",
+			"    Ok(())",
+			"  }",
+			"",
+			"  fn cleanup(&mut self) -> Result<(), &str> {",
+			"    self.cleanup_helper()?;",
+			"    ",
+			"    Ok(())",
+			"  }",
+			"",
+			"  fn compose(&mut self, data: &InstanceData) -> Result<Type, &str> {",
+			"    self.compose_helper(data)?;",
+			"    Ok(self.output_types()[0])",
+			"  }",
+			"",
+			"  fn activate(&mut self, _context: &Context, _input: &Var) -> Result<Var, &str> {",
+			"    Ok(Var::default())",
+			"  }",
+			"}",
+		],
+		"description": "New rust shard scaffolding"
 	}
 }
