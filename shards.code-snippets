@@ -9,6 +9,13 @@
 		],
 		"description": "Common includes for new shard implementations"
 	},
+	"C++ Shard Help": {
+		"scope": "cpp",
+		"prefix": "shardhelp",
+		"body": [
+			"static SHOptionalString help() { return SHCCSTR(\"$0\"); }",
+		]
+	},
 	"C++ Shard": {
 		"scope": "cpp",
 		"prefix": "shard",
@@ -54,6 +61,32 @@
 			"  #[enum_value(\"AddDescriptionHere\")]",
 			"  None = 0x0,",
 			"}",
+		],
+		"description": "New rust enum scaffolding"
+	},
+	
+	"Warmup + Cleanup + Compose defaults": {
+		"scope": "rust",
+		"prefix": "compose_warmup_cleanup",
+		"body": [
+			"  fn warmup(&mut self, ctx: &Context) -> Result<(), &str> {",
+			"    self.warmup_helper(ctx)?;",
+			"    Ok(())",
+			"  }",
+			"",
+			"  fn cleanup(&mut self) -> Result<(), &str> {",
+			"    self.cleanup_helper()?;",
+			"    Ok(())",
+			"  }",
+			"",
+			"  fn compose(&mut self, data: &InstanceData) -> Result<Type, &str> {",
+			"    self.compose_helper(data)?;",
+			"    Ok(self.output_types()[0])",
+			"  }",
+			"",
+			"  fn activate(&mut self, _context: &Context, _input: &Var) -> Result<Var, &str> {",
+			"    Ok(Var::default())",
+			"  }",
 		],
 		"description": "New rust enum scaffolding"
 	},
@@ -103,7 +136,7 @@
 			"  }",
 			"",
 			"  fn output_types(&mut self) -> &Types {",
-			"    &OUTPUT_TYPES",
+			"    &NONE_TYPES",
 			"  }",
 			"",
 			"  fn warmup(&mut self, ctx: &Context) -> Result<(), &str> {",
