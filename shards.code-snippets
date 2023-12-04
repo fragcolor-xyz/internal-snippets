@@ -32,20 +32,32 @@
 			"    PARAM_WARMUP(context);",
 			"  }",
 			"  ",
-			"  void cleanup() {",
-			"    PARAM_CLEANUP();",
+			"  void cleanup(SHContext *context) {",
+			"    PARAM_CLEANUP(context);",
 			"  }",
 			"  ",
 			"  PARAM_REQUIRED_VARIABLES();",
 			"  SHTypeInfo compose(SHInstanceData &data) {",
 			"    PARAM_COMPOSE_REQUIRED_VARIABLES(data);",
-			"    return shards::CoreInfo::NoneType;",
+			"    return outputTypes().elements[0];",
 			"  }",
 			"  ",
 			"  SHVar activate(SHContext *shContext, const SHVar &input) { return input; }",
 			"};",
 		],
 		"description": "New C++ shard scaffolding"
+	},
+	"Register shards": {
+		"scope": "cpp",
+		"prefix": "register_shard",
+		"body": [
+			"namespace shards {"
+			"SHARDS_REGISTER_FN($0) {",
+			"\t//REGISTER_SHARD(\"ShardName\", ShardName);",
+			"}",
+			"} // namespace shards"
+		],
+		"description": "C++ registration scaffolding"
 	},
 	"Rust Enum": {
 		"scope": "rust",
@@ -64,7 +76,6 @@
 		],
 		"description": "New rust enum scaffolding"
 	},
-	
 	"Warmup + Cleanup + Compose defaults": {
 		"scope": "rust",
 		"prefix": "compose_warmup_cleanup",
@@ -74,8 +85,8 @@
 			"    Ok(())",
 			"  }",
 			"",
-			"  fn cleanup(&mut self) -> Result<(), &str> {",
-			"    self.cleanup_helper()?;",
+			"  fn cleanup(&mut self, ctx: Option<&Context>) -> Result<(), &str> {",
+			"    self.cleanup_helper(ctx)?;",
 			"    Ok(())",
 			"  }",
 			"",
@@ -89,6 +100,24 @@
 			"  }",
 		],
 		"description": "New rust enum scaffolding"
+	},
+	"Try cast variable": {
+		"scope": "rust",
+		"prefix": "tryvar",
+		"body": [
+			"if let Ok(v) = TryInto::<${2:TYPE}>::try_into(&${1:VAR}) {",
+			"	$0",
+			"}",
+		],
+		"description": "Try cast SHVar into some native rust type"
+	},
+	"Try cast with default": {
+		"scope": "rust",
+		"prefix": "tryvardefault",
+		"body": [
+			"let v = TryInto::<${2:TYPE}>::try_into(&${1:VAR}).unwrap_or_default();",
+		],
+		"description": "Try cast SHVar into some native rust type, with default fallback"
 	},
 	"Rust Prelude": {
 		"scope": "rust",
