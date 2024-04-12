@@ -31,7 +31,6 @@
 			"  void warmup(SHContext *context) {",
 			"    PARAM_WARMUP(context);",
 			"  }",
-			"  ",
 			"  void cleanup(SHContext *context) {",
 			"    PARAM_CLEANUP(context);",
 			"  }",
@@ -51,11 +50,9 @@
 		"scope": "cpp",
 		"prefix": "register_shard",
 		"body": [
-			"namespace shards {"
 			"SHARDS_REGISTER_FN($0) {",
 			"\t//REGISTER_SHARD(\"ShardName\", ShardName);",
 			"}",
-			"} // namespace shards"
 		],
 		"description": "C++ registration scaffolding"
 	},
@@ -106,7 +103,7 @@
 		"prefix": "tryvar",
 		"body": [
 			"if let Ok(v) = TryInto::<${2:TYPE}>::try_into(&${1:VAR}) {",
-			"	$0",
+			"  $0",
 			"}",
 		],
 		"description": "Try cast SHVar into some native rust type"
@@ -174,8 +171,8 @@
 			"    Ok(())",
 			"  }",
 			"",
-			"  fn cleanup(&mut self) -> Result<(), &str> {",
-			"    self.cleanup_helper()?;",
+			"  fn cleanup(&mut self, ctx: Option<&Context>) -> Result<(), &str> {",
+			"    self.cleanup_helper(ctx)?;",
 			"    ",
 			"    Ok(())",
 			"  }",
